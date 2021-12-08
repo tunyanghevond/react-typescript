@@ -1,28 +1,14 @@
 import { useContext, useEffect } from "react";
 import "./App.css";
 import { Store } from "./store/Store";
-
-interface IEpisodes {
-  airdate: string;
-  airstamp: string;
-  airtime: string;
-  id: number;
-  image: {
-    medium: string;
-    original: string;
-  };
-  name: string;
-  number: number;
-  rating: { average: null };
-  runtime: number;
-  season: number;
-  summary: string;
-  type: string;
-  url: string;
-}
+import { IEpisodes, IAction } from "./interfaces";
 
 function App(): JSX.Element {
   const { state, dispatch } = useContext(Store);
+
+  useEffect(() => {
+    state.episodes.length === 0 && fetchData();
+  });
 
   const fetchData = async () => {
     const URL =
@@ -35,15 +21,31 @@ function App(): JSX.Element {
       payload: dataJSON._embedded.episodes,
     });
   };
-  useEffect(() => {
-    state.episodes.length === 0 && fetchData();
-  });
-  console.log(state.episodes);
+
+  const toggleFavAction = (episodes: IEpisodes): IAction => {
+    const episodeInFav = state.favourites.includes(episodes);
+    let dispatchObj = {
+      type: "ADD_FAV",
+      payload: episodes,
+    };
+    if (episodeInFav) {
+      const newFavirote = state.favourites.filter(
+        (item: any) => item.id !== episodes.id
+      );
+      dispatchObj = { type: "REMOVE_FAV", payload: newFavirote };
+    }
+
+    return dispatch(dispatchObj);
+  };
+  console.log(state);
   return (
     <>
       <header className="header">
-        <h1>Rick and Morty</h1>
-        <p>Pick your favourite episodes!!! </p>
+        <div>
+          <h1>Rick and Morty</h1>
+          <p>Pick your favourite episodes!!! </p>
+        </div>
+        <div>Favorites: {state.favourites.length}</div>
       </header>
       <section className="episode-layout">
         {state.episodes.map((episode: IEpisodes) => {
@@ -57,6 +59,13 @@ function App(): JSX.Element {
               <div>
                 Season: {episode.season} Number:{episode.number}
               </div>
+              <button type="button" onClick={() => toggleFavAction(episode)}>
+                {state.favourites.find(
+                  (fev: IEpisodes) => fev.id === episode.id
+                )
+                  ? "UnFav"
+                  : "Fav"}
+              </button>
             </aside>
           );
         })}
