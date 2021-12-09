@@ -1,5 +1,6 @@
 import { useContext, useEffect } from "react";
 import "./App.css";
+import defaultImg from "./images/small.jpeg";
 import { Store } from "./store/Store";
 import { IEpisodes, IAction } from "./interfaces";
 
@@ -52,20 +53,23 @@ function App(): JSX.Element {
           return (
             <aside key={episode.id} className="episode-box">
               <img
-                src={episode.image.medium}
+                src={defaultImg || episode.url}
                 alt={`Rick and Mort ${episode.name}`}
               />
               <p>{episode.name}</p>
-              <div>
-                Season: {episode.season} Number:{episode.number}
+              <div className="season">
+                <p>
+                  Season: {episode.season} Number:{episode.number}
+                </p>
+
+                <button type="button" onClick={() => toggleFavAction(episode)}>
+                  {state.favourites.find(
+                    (fev: IEpisodes) => fev.id === episode.id
+                  )
+                    ? "UnFav"
+                    : "Fav"}
+                </button>
               </div>
-              <button type="button" onClick={() => toggleFavAction(episode)}>
-                {state.favourites.find(
-                  (fev: IEpisodes) => fev.id === episode.id
-                )
-                  ? "UnFav"
-                  : "Fav"}
-              </button>
             </aside>
           );
         })}

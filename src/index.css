@@ -19,6 +19,10 @@ body {
 .episode-box {
   padding: 0.5rem;
 }
+.season {
+  display: flex;
+  justify-content: space-between;
+}
 .header {
   display: flex;
   justify-content: space-between;
